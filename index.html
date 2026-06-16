@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suburb Finder · Mortgage Choice Broker Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f9fafb;
+      color: #1f2937;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 20px;
+      color: #008080;
+      letter-spacing: -0.01em;
+    }
+    .badge-beta {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    /* ── Main layout ── */
+    .main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 24px 0;
+    }
+    .tool-desc {
+      font-size: 14px;
+      color: #6b7280;
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .panels {
+      display: flex;
+      gap: 4%;
+      align-items: flex-start;
+    }
+    .left-panel {
+      width: 38%;
+      position: sticky;
+      top: 72px;
+    }
+    .right-panel { width: 58%; }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+
+    /* ── Form card ── */
+    .form-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .field { margin-bottom: 20px; }
+    .field:last-of-type { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    .helper {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #1f2937;
+      background: #fff;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #008080;
+      box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.1);
+    }
+    input[type="number"] { -moz-appearance: textfield; }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    /* ── Checkboxes ── */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 8px 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .checkbox-item:hover { border-color: #008080; background: #f0fdfa; }
+    .checkbox-item.selected { border-color: #008080; background: #f0fdfa; }
+    .checkbox-item input { accent-color: #008080; width: 15px; height: 15px; cursor: pointer; }
+    .checkbox-item span { font-size: 13px; color: #374151; }
+
+    /* ── Radio buttons ── */
+    .radio-group { display: flex; gap: 8px; }
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 8px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      flex: 1;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .radio-item:hover { border-color: #008080; background: #f0fdfa; }
+    .radio-item.selected { border-color: #008080; background: #f0fdfa; }
+    .radio-item input { accent-color: #008080; cursor: pointer; }
+    .radio-item span { font-size: 13px; color: #374151; font-weight: 500; }
+
+    /* ── Submit button ── */
+    .submit-btn {
+      width: 100%;
+      background: #008080;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: background 0.15s;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.01em;
+    }
+    .submit-btn:hover { background: #006666; }
+    .submit-btn:active { transform: scale(0.99); }
+
+    /* ── Placeholder state ── */
+    .placeholder-state {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 60px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 320px;
+    }
+    .placeholder-icon {
+      width: 64px;
+      height: 64px;
+      background: #f3f4f6;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .placeholder-text {
+      font-size: 14px;
+      color: #6b7280;
+      max-width: 240px;
+      line-height: 1.5;
+    }
+
+    /* ── Result cards ── */
+    .results-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .suburb-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: default;
+      transition: border-color 0.2s, box-shadow 0.2s, opacity 0.3s ease, transform 0.3s ease;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .suburb-card:hover {
+      border-color: #008080;
+      box-shadow: 0 4px 12px rgba(0, 128, 128, 0.1);
+    }
+    .suburb-card.visible { opacity: 1; transform: translateY(0); }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .suburb-name { font-size: 18px; font-weight: 700; color: #1f2937; }
+
+    .match-badge {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-comfortable { background: #dcfce7; color: #15803d; }
+    .badge-goodfit     { background: #ccfbf1; color: #0f766e; }
+    .badge-stretch     { background: #fef3c7; color: #b45309; }
+
+    .card-stats {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .stat { font-size: 13px; color: #6b7280; }
+    .stat-label { color: #9ca3af; }
+    .stat-value { font-weight: 500; }
+
+    .repayment-block {
+      background: #f0fdfa;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .repayment-amount { font-size: 16px; font-weight: 700; color: #1f2937; }
+    .repayment-sub { font-size: 12px; color: #6b7280; margin-top: 3px; line-height: 1.4; }
+
+    .card-desc { font-size: 13px; color: #4b5563; line-height: 1.5; margin-bottom: 10px; }
+    .card-footer { font-size: 11px; color: #9ca3af; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 28px 24px;
+      font-size: 12px;
+      color: #9ca3af;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 40px;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .panels { flex-direction: column; }
+      .left-panel, .right-panel { width: 100%; position: static; }
+      .main { padding: 16px 16px 0; }
+      .checkbox-grid { grid-template-columns: 1fr; }
+      .radio-group { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <span class="logo">Mortgage Choice</span>
+    <span class="badge-beta">Broker Tool · Beta</span>
+  </header>
+
+  <div class="main">
+    <p class="tool-desc">
+      Enter your client's financial profile to get a ranked list of suburbs where they're a realistic buyer.
+      All figures are indicative — confirm with current market data.
+    </p>
+
+    <div class="panels">
+
+      <!-- Left: Input form -->
+      <div class="left-panel">
+        <div class="section-label">Your client's situation</div>
+        <div class="form-card">
+
+          <div class="field">
+            <label for="borrowing">Borrowing capacity</label>
+            <input type="number" id="borrowing" placeholder="e.g. 650000" min="0" />
+            <p class="helper">From your pre-approval estimate or borrowing calculator</p>
+          </div>
+
+          <div class="field">
+            <label for="deposit">Deposit saved</label>
+            <input type="number" id="deposit" placeholder="e.g. 80000" min="0" />
+            <p class="helper">This affects upfront costs like stamp duty</p>
+          </div>
+
+          <div class="field">
+            <label for="repayment">Maximum monthly repayment</label>
+            <input type="number" id="repayment" placeholder="e.g. 3200" min="0" />
+            <p class="helper">Based on your client's income and living expenses</p>
+          </div>
+
+          <div class="field">
+            <label for="commute">Preferred commute destination</label>
+            <input type="text" id="commute" placeholder="e.g. Melbourne CBD, Southbank, Docklands" />
+            <p class="helper">We'll prioritise suburbs within reasonable commute distance</p>
+          </div>
+
+          <div class="field">
+            <label>Lifestyle priorities <span style="font-weight:400;color:#9ca3af">(pick up to 2)</span></label>
+            <div class="checkbox-grid">
+              <label class="checkbox-item"><input type="checkbox" onchange="handleCheck(this)" /><span>Good public transport</span></label>
+              <label class="checkbox-item"><input type="checkbox" onchange="handleCheck(this)" /><span>Close to schools</span></label>
+              <label class="checkbox-item"><input type="checkbox" onchange="handleCheck(this)" /><span>Cafe &amp; dining precinct</span></label>
+              <label class="checkbox-item"><input type="checkbox" onchange="handleCheck(this)" /><span>Green space &amp; parks</span></label>
+              <label class="checkbox-item"><input type="checkbox" onchange="handleCheck(this)" /><span>Family-friendly streets</span></label>
+              <label class="checkbox-item"><input type="checkbox" onchange="handleCheck(this)" /><span>Investment potential</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Property type preference</label>
+            <div class="radio-group">
+              <label class="radio-item"><input type="radio" name="proptype" onchange="handleRadio(this)" /><span>House</span></label>
+              <label class="radio-item"><input type="radio" name="proptype" onchange="handleRadio(this)" /><span>Apartment / Unit</span></label>
+              <label class="radio-item"><input type="radio" name="proptype" onchange="handleRadio(this)" /><span>Either</span></label>
+            </div>
+          </div>
+
+          <button class="submit-btn" onclick="showResults()">Find affordable suburbs →</button>
+        </div>
+      </div>
+
+      <!-- Right: Results -->
+      <div class="right-panel">
+        <div class="section-label">Suburb recommendations</div>
+        <div id="results-area">
+          <div class="placeholder-state">
+            <div class="placeholder-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5"/>
+              </svg>
+            </div>
+            <p class="placeholder-text">Enter your client's details to see suburb recommendations</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>Data powered by PropTrack · Indicative only · Not financial advice</footer>
+
+  <script>
+    const SUBURBS = [
+      {
+        name: "Preston VIC 3072",
+        median: 785000,
+        sales: 42,
+        growth: 6.1,
+        repayment: 3420,
+        desc: "9km north of CBD, strong community feel, Northland shopping centre nearby, High St dining strip, direct train to city via South Morang line."
+      },
+      {
+        name: "Coburg VIC 3058",
+        median: 810000,
+        sales: 38,
+        growth: 5.8,
+        repayment: 3530,
+        desc: "8km from CBD, popular with young families, strong café scene on Sydney Rd, good bus and tram connections."
+      },
+      {
+        name: "Footscray VIC 3011",
+        median: 720000,
+        sales: 56,
+        growth: 7.4,
+        repayment: 3140,
+        desc: "5km west of CBD, undergoing significant urban renewal, strong investment fundamentals, Metro Tunnel station nearby."
+      },
+      {
+        name: "Reservoir VIC 3073",
+        median: 750000,
+        sales: 61,
+        growth: 5.3,
+        repayment: 3270,
+        desc: "12km north, one of Melbourne's largest suburbs, family-oriented, affordable entry point, good school catchments."
+      },
+      {
+        name: "Thornbury VIC 3071",
+        median: 870000,
+        sales: 19,
+        growth: 6.6,
+        repayment: 3790,
+        desc: "8km north, high demand suburb, strong lifestyle credentials on High St, competitive auction market, best suited if client has flexibility on budget ceiling."
+      }
+    ];
+
+    function getBadgeClass(badge) {
+      if (badge === "Comfortable") return "badge-comfortable";
+      if (badge === "Good fit")    return "badge-goodfit";
+      return "badge-stretch";
+    }
+
+    function fmtCurrency(n) {
+      return "$" + Math.round(n).toLocaleString();
+    }
+
+    function computeBadge(totalBudget, median) {
+      const ratio = totalBudget / median;
+      if (ratio >= 1.10) return "Comfortable";
+      if (ratio >= 0.90) return "Good fit";
+      return "Stretch";
+    }
+
+    function getDepositPct(borrowing, deposit) {
+      const total = borrowing + deposit;
+      return total ? Math.round((deposit / total) * 100) : 20;
+    }
+
+    function handleCheck(el) {
+      const all = document.querySelectorAll('.checkbox-grid input[type=checkbox]');
+      const checked = Array.from(all).filter(c => c.checked);
+      if (checked.length > 2 && el.checked) { el.checked = false; return; }
+      all.forEach(cb => cb.closest('.checkbox-item').classList.toggle('selected', cb.checked));
+    }
+
+    function handleRadio(el) {
+      document.querySelectorAll('.radio-item').forEach(r => r.classList.remove('selected'));
+      el.closest('.radio-item').classList.add('selected');
+    }
+
+    function showResults() {
+      const borrowing = parseFloat(document.getElementById('borrowing').value) || 650000;
+      const deposit   = parseFloat(document.getElementById('deposit').value)   || 80000;
+      const total     = borrowing + deposit;
+      const pct       = getDepositPct(borrowing, deposit);
+      const sub       = `Based on 6.2% p.a., 30yr term, ${pct}% deposit`;
+
+      const html = SUBURBS.map((s, i) => {
+        const badge = computeBadge(total, s.median);
+        return `
+          <div class="suburb-card" id="card-${i}">
+            <div class="card-top">
+              <span class="suburb-name">${s.name}</span>
+              <span class="match-badge ${getBadgeClass(badge)}">${badge}</span>
+            </div>
+            <div class="card-stats">
+              <div class="stat"><span class="stat-label">Median sold price:&nbsp;</span><span class="stat-value">${fmtCurrency(s.median)}</span></div>
+              <div class="stat"><span class="stat-label">Recent sales in range:&nbsp;</span><span class="stat-value">${s.sales} in last 90 days</span></div>
+              <div class="stat"><span class="stat-label">5yr price growth:&nbsp;</span><span class="stat-value">${s.growth}%</span></div>
+            </div>
+            <div class="repayment-block">
+              <div class="repayment-amount">Est. monthly repayment: ${fmtCurrency(s.repayment)}</div>
+              <div class="repayment-sub">${sub}</div>
+            </div>
+            <p class="card-desc">${s.desc}</p>
+            <div class="card-footer">Data as of June 2026 · Indicative only</div>
+          </div>`;
+      }).join('');
+
+      document.getElementById('results-area').innerHTML = `<div class="results-list">${html}</div>`;
+
+      SUBURBS.forEach((_, i) => {
+        setTimeout(() => {
+          const card = document.getElementById(`card-${i}`);
+          if (card) card.classList.add('visible');
+        }, i * 150);
+      });
+    }
+  </script>
+
+</body>
+</html>
